@@ -6,8 +6,10 @@
 		<title :text="$page.title.suffix(' · ', $site.title)"></title>
 		<meta name="description" content="$page.description">
 		<meta name="author" content="$site.custom.get('name')">
-		<meta name="theme-color" content="#f4efe3">
+		<meta name="theme-color" content="#f4efe3" media="(prefers-color-scheme: light)">
+		<meta name="theme-color" content="#1a1611" media="(prefers-color-scheme: dark)">
 		<link rel="icon" href="$site.asset('favicon.svg').link()" type="image/svg+xml">
+		<script>(function(){try{var t=localStorage.getItem("theme");if(!t){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","light");}})();</script>
 		<link rel="preload" href="$site.asset('fonts/archivo-black.woff2').link()" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="$site.asset('fonts/archivo-var.woff2').link()" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="$site.asset('fonts/newsreader-var.woff2').link()" as="font" type="font/woff2" crossorigin>
@@ -27,6 +29,7 @@
 				<a class="$page.link().contains('/projects').then('nav-link is-current', 'nav-link')" href="$site.page('projects').link()">Projects</a>
 				<a class="$page.link().contains('/articles').then('nav-link is-current', 'nav-link')" href="$site.page('articles').link()">Articles</a>
 				<a class="$page.link().contains('/about').then('nav-link is-current', 'nav-link')" href="$site.page('about').link()">About</a>
+				<button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Dark</span></button>
 			</nav>
 		</header>
 		<main id="main">
@@ -54,5 +57,6 @@
 			<p class="footer-fine">
 			</p>
 		</footer>
+		<script>(function(){var btn=document.getElementById("theme-toggle");if(!btn){return;}function paint(){var dark=document.documentElement.getAttribute("data-theme")==="dark";var icon=btn.querySelector(".theme-icon");var label=btn.querySelector(".theme-label");btn.setAttribute("aria-pressed",dark?"true":"false");btn.setAttribute("aria-label",dark?"Switch to light mode":"Switch to dark mode");if(icon){icon.textContent=dark?"☀":"☾";}if(label){label.textContent=dark?"Light":"Dark";}}btn.addEventListener("click",function(){var next=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",next);try{localStorage.setItem("theme",next);}catch(e){}paint();});paint();})();</script>
 	</body>
 </html>
