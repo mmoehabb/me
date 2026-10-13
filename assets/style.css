@@ -479,9 +479,9 @@ nav[aria-label="Primary"] {
 .dispatch {
 	display: grid;
 	grid-template-columns: 7.5rem 1fr auto;
-	gap: 0.3rem 1.3rem;
-	align-items: baseline;
-	padding: 1.05rem 0.4rem;
+	gap: 0.6rem 1.3rem;
+	align-items: start;
+	padding: 1.6rem 0.4rem;
 	border-bottom: 1px solid color-mix(in oklch, var(--ink) 30%, transparent);
 }
 
@@ -492,6 +492,15 @@ nav[aria-label="Primary"] {
 	text-transform: uppercase;
 	color: var(--ink-soft);
 	white-space: nowrap;
+	padding-top: 0.45em;
+}
+
+.dispatch-main {
+	min-width: 0;
+}
+
+.dispatch > .dispatch-title {
+	min-width: 0;
 }
 
 .dispatch-time {
@@ -518,13 +527,13 @@ nav[aria-label="Primary"] {
 }
 
 .dispatch-dek {
-	margin: 0.35rem 0 0;
+	margin: 0.5rem 0 0.2rem;
 	color: var(--ink-soft);
 	font-size: 1.02rem;
 }
 
 .dispatch-main .tag-row {
-	margin-top: 0.6rem;
+	margin-top: 0.8rem;
 }
 
 /* ---------- about strip ---------- */
@@ -794,6 +803,10 @@ nav[aria-label="Primary"] {
 }
 
 .prose table {
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: auto;
 	border-collapse: collapse;
 	margin: 1.8em 0;
 	font-size: 0.95rem;
@@ -804,6 +817,19 @@ nav[aria-label="Primary"] {
 	border: 1.5px solid var(--ink);
 	padding: 0.5em 0.8em;
 	text-align: left;
+	vertical-align: top;
+	overflow-wrap: break-word;
+}
+
+.prose th:first-child,
+.prose td:first-child {
+	min-width: 9rem;
+}
+
+.prose td code,
+.prose th code {
+	white-space: normal;
+	overflow-wrap: break-word;
 }
 
 .prose thead th {
@@ -1032,10 +1058,13 @@ nav[aria-label="Primary"] {
 
 	.dispatch {
 		grid-template-columns: 1fr auto;
+		gap: 0.5rem 1rem;
+		padding: 1.4rem 0.2rem;
 	}
 
 	.dispatch-date {
 		grid-column: 1 / -1;
+		padding-top: 0;
 	}
 
 	.dispatch-main {
