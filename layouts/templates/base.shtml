@@ -24,7 +24,8 @@
 				<span class="brand-block" aria-hidden="true"></span>
 				<span :text="$site.custom.get('name')"></span>
 			</a>
-			<nav aria-label="Primary">
+			<button id="nav-toggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open menu">Menu</button>
+			<nav id="primary-nav" aria-label="Primary">
 				<a class="$site.index().isCurrent().then('nav-link is-current', 'nav-link')" href="$site.index().link()">Index</a>
 				<a class="$page.link().contains('/projects').then('nav-link is-current', 'nav-link')" href="$site.page('projects').link()">Projects</a>
 				<a class="$page.link().contains('/articles').then('nav-link is-current', 'nav-link')" href="$site.page('articles').link()">Articles</a>
@@ -58,5 +59,6 @@
 			</p>
 		</footer>
 		<script>(function(){var btn=document.getElementById("theme-toggle");if(!btn){return;}function paint(){var dark=document.documentElement.getAttribute("data-theme")==="dark";var icon=btn.querySelector(".theme-icon");var label=btn.querySelector(".theme-label");btn.setAttribute("aria-pressed",dark?"true":"false");btn.setAttribute("aria-label",dark?"Switch to light mode":"Switch to dark mode");if(icon){icon.textContent=dark?"☀":"☾";}if(label){label.textContent=dark?"Light":"Dark";}}btn.addEventListener("click",function(){var next=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",next);try{localStorage.setItem("theme",next);}catch(e){}paint();});paint();})();</script>
+		<script>(function(){var btn=document.getElementById("nav-toggle");var masthead=document.querySelector(".masthead");if(!btn||!masthead){return;}function close(){masthead.classList.remove("is-open");btn.setAttribute("aria-expanded","false");btn.setAttribute("aria-label","Open menu");btn.textContent="Menu";}function open(){masthead.classList.add("is-open");btn.setAttribute("aria-expanded","true");btn.setAttribute("aria-label","Close menu");btn.textContent="Close";}btn.addEventListener("click",function(){masthead.classList.contains("is-open")?close():open();});masthead.querySelectorAll("nav a").forEach(function(a){a.addEventListener("click",close);});document.addEventListener("keydown",function(e){if(e.key==="Escape"){close();}});})();</script>
 	</body>
 </html>
