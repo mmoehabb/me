@@ -1,0 +1,42 @@
+---
+.title = "Maestro",
+.date = .date("2026-10-13T00:00:00"),
+.description = "tmux for agents; run AI coding agents side by side in tabs.",
+.layout = "project.shtml",
+.tags = ["featured", "tool", "go", "agentic ai"],
+.custom = .{
+    .year = "2026",
+    .status = "v1.2.0",
+    .stack = ["Go"],
+    .url = "https://github.com/mmoehabb/maestro",
+},
+---
+
+tmux for coding agents. Run Codex, agy, OpenCode, Claude Code, Qoder, Kimi
+Code and Cursor Agent side by side in tabs. Each tab is a task with its own
+git worktree that becomes a PR, and Maestro keeps the history so you can
+switch agents without losing context.
+
+# Problem
+
+Running modern AI coding agents across multiple parallel tasks creates friction and coordination overhead:
+
+- Filesystem & Git Collisions: Running multiple agents in a single workspace causes dirty working trees, untracked changes, and conflicting edits.
+- Session Fragmentation: Agents run in isolated terminal windows without centralized process management; closing a terminal interrupts work.
+- Context Loss Across Agents: Switching between different agents (e.g., Codex, Claude Code, agy, Cursor) requires manually restating task
+requirements and losing conversation history.
+- Disconnected Task Lifecycles: The loop between task definition, agent execution, diff review, PR creation, and cleanup lacks unified tracking and
+persistent record-keeping.
+
+# Approach
+
+Maestro solves this by acting as "tmux for coding agents"—combining a background daemon, a multiplexed terminal UI (TUI), and Git-native workflows:
+
+- Task-to-Worktree Isolation: Every task tab automatically provisions and runs inside its own isolated Git worktree and branch, allowing multiple
+agents to work concurrently on the same repository without file collision.
+- Persistent Session Multiplexing: A background daemon manages PTY agent processes independently of the TUI. Developers can detach, reconnect, or
+close the interface while agents continue executing in the background.
+- Context-Preserving Agent Handoff: Maestro unifies disparate agent transcripts into a single task history and generates structured handoff briefs
+(.maestro/handoff.md), enabling seamless agent switching on an existing task without losing prior context.
+- End-to-End Lifecycle & Forge Integration: Integrates terminal supervision with Git forge operations (diff inspection, push, PR creation, and
+merging), automatically cleaning up worktrees after merge while preserving the full task timeline and conversation history in local SQLite storage.

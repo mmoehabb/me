@@ -1,0 +1,70 @@
+/* Syntax highlighting for static code blocks (dark ink slabs). */
+
+code .comment,
+code .doc {
+	color: #8e887a;
+	font-style: italic;
+}
+
+code .keyword,
+code .conditional,
+code .repeat,
+code .debug,
+code .label {
+	color: #f9759f;
+}
+
+code .string,
+code .character {
+	color: #e8c468;
+}
+
+code .number,
+code .boolean,
+code .constant,
+code .constant_builtin,
+code .float {
+	color: #7fb5e8;
+}
+
+code .function,
+code .method,
+code .constructor {
+	color: #6fd3c6;
+}
+
+code .type,
+code .type_builtin,
+code .builtin,
+code .namespace,
+code .module {
+	color: #9db4f0;
+}
+
+code .operator {
+	color: #f9759f;
+}
+
+code .punctuation,
+code .punctuation_bracket,
+code .punctuation_delimiter,
+code .punctuation_special,
+code .bracket,
+code .variable,
+code .variable_parameter,
+code .property,
+code .parameter {
+	color: #cfc8b8;
+}
+
+code .tag {
+	color: #f9759f;
+}
+
+code .attribute {
+	color: #e8c468;
+}
+
+code .escape {
+	color: #f2a65a;
+}

@@ -1,0 +1,10 @@
+---
+.title = "Projects",
+.date = .date("2026-10-01T00:00:00"),
+.description = "A rolling archive of shipped things — small tools and experiments.",
+.layout = "projects.shtml",
+---
+
+A rolling archive of shipped things: small tools, web applications, and
+the occasional experiment that got out of hand. Each one taught me
+something I'd rather not unlearn.

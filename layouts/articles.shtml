@@ -1,0 +1,25 @@
+<extend template="base.shtml">
+<head id="head">
+	<link rel="alternate" type="application/rss+xml" href="$page.alternative('rss').link()" title="$site.title.suffix(' — dispatches feed')">
+</head>
+<main id="main">
+	<header class="page-head rise">
+		<p class="kicker">Dispatches from the desk</p>
+		<h1 class="page-title" :text="$page.title"></h1>
+		<div class="prose page-intro" :html="$page.content()"></div>
+		<p class="rss-stamp"><a href="$page.alternative('rss').link()">Subscribe via RSS ↗</a></p>
+	</header>
+	<div class="dispatch-list dispatch-list-full rise rise-2">
+		<div class="dispatch" :loop="$page.leaves()">
+			<span class="dispatch-date" :text="$loop.it.date.format('02 Jan 2006')"></span>
+			<div class="dispatch-main">
+				<h2 class="dispatch-title"><a href="$loop.it.link()" :text="$loop.it.title"></a></h2>
+				<p class="dispatch-dek" :text="$loop.it.description"></p>
+				<div class="tag-row">
+					<ctx :loop="$loop.it.tags"><span class="tag" :text="$loop.it"></span></ctx>
+				</div>
+			</div>
+			<span class="dispatch-time" :text="$loop.it.wordCount().div(200).plus(1).str().suffix(' min')"></span>
+		</div>
+	</div>
+</main>

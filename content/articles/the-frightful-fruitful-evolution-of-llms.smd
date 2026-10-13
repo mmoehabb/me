@@ -1,0 +1,70 @@
+---
+.title = "The Frightful-Fruitful Evolution of LLMs",
+.date = .date("2026-10-11T00:00:00"),
+.description = "How LLMs evolved, over the past three years, in the software development field",
+.layout = "article.shtml",
+.tags = ["AI", "Software", "Coding"],
+.authors = ["Mo Ehab"],
+---
+
+
+From coding, to reviewing code, to structuring it, to designing domain models,
+to making only a few architectural decisions, and finally, to merely stating
+the problem or describing the product.
+
+This is the frightful (to tech nerds), yet fruitful (to business psychos),
+evolution of LLMs in the field of software development over the past three
+years.
+
+I remember when I was using them merely to generate tedious, dull snippets
+of code and then copy-pasting them into my editor; for example, writing a
+huge enum structure that holds all SDL input events. I call this the coding
+phase: where programmers still wrote the codebase themselves and had 100%
+awareness of how it was being written, designed, and evolved.
+
+Then AI agents emerged, and agentic coding models and tools appeared, almost
+abstracting programming away entirely. I no longer had to write any code
+myself; I just carried the burden of reviewing it. This is the reviewing
+phase: where programmers still had some grasp of the codebase, yet didn't
+write a single line of code themselves.
+
+Then it got worse, or better (depending on who you are), to the point where
+it was no longer reasonable to have a human review all the LLM-generated
+code. Moreover, agents became capable of reviewing the code themselves
+and auditing the implementation recursively until it reached an acceptable
+state. This is the structuring phase: where programmers only had to understand
+the different components that constituted the codebase in order to write
+more effective prompts, think through problems, and address issues whenever
+agents got stuck.
+
+Then it became even more frightful, yet more fruitful. It wrote code better than
+all of us, structured it well, and almost never got stuck on problems! This is
+the domain design phase: where your entire job, as a programmer, was to state
+the problem correctly, establish a ubiquitous language, design the domain
+model, and draw the boundaries, then leave the rest to the machine. Don't
+bother with what low-level components or structs are implemented, what
+algorithms are used, or what third-party packages are installed.
+
+Then this stochastic parrot machine evolved, horrendously and gorgeously,
+enough to make better use of its "knowledge" (training data) and formulate it
+into beautiful domain models. It would certainly know almost any pre-existing
+domain better than the programmer, and it would certainly ask the most critical
+questions that would influence the design. This is the architecture phase:
+where programmers carried only the burden of making a few high-level decisions,
+such as which programming language to use, what technology stack to adopt,
+what data strategy and topology to choose, and what NFRs to satisfy.
+
+Then GPT Astra and Opus 5.5 landed, leaving absolutely nothing for the
+programmer but a wish! You only have to wish and watch your wishes come true.
+
+Just a few days ago, I wished there were a CLI program that could manage my
+agents and facilitate handing off tasks and progress between them (any →
+Cursor → Codex → etc.). And out of the blue, I had a fully functional
+CLI project "[maestro](https://mmoehabb.github.io/maestro/)", sitting in my
+own GitHub repositories, without the slightest idea of how it worked, how it
+was implemented, or what packages and technologies had been used to make it happen.
+
+All I did was run acceptance tests.
+
+And this is the phase where we, the nerds, are fucking doomed, and they,
+the few psychos, are blessed.

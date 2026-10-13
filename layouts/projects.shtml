@@ -1,0 +1,28 @@
+<extend template="base.shtml">
+<head id="head">
+</head>
+<main id="main">
+	<header class="page-head rise">
+		<p class="kicker">The work</p>
+		<h1 class="page-title" :text="$page.title"></h1>
+		<div class="prose page-intro" :html="$page.content()"></div>
+	</header>
+	<div class="work-list work-list-page rise rise-2">
+		<div :loop="$page.leaves()">
+			<a class="work-row" href="$loop.it.link()">
+				<span class="num" :text="$loop.idx.str()"></span>
+				<div class="work-main">
+					<h2 :text="$loop.it.title"></h2>
+					<p :text="$loop.it.description"></p>
+					<div class="tag-row">
+						<ctx :loop="$loop.it.tags"><span class="tag" :text="$loop.it"></span></ctx>
+					</div>
+				</div>
+				<span class="work-meta">
+					<span class="work-year" :text="$loop.it.custom.get('year')"></span>
+					<span class="arrow" aria-hidden="true">→</span>
+				</span>
+			</a>
+		</div>
+	</div>
+</main>

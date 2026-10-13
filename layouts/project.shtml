@@ -1,0 +1,51 @@
+<extend template="base.shtml">
+<head id="head">
+</head>
+<main id="main">
+	<article class="rise">
+		<header class="page-head">
+			<p class="kicker">
+				<a href="$site.page('projects').link()">Projects</a>
+				<span aria-hidden="true"> / </span>
+				<span :text="$page.custom.get('year')"></span>
+			</p>
+			<h1 class="page-title" :text="$page.title"></h1>
+			<p class="page-dek" :text="$page.description"></p>
+		</header>
+		<dl class="facts">
+			<div class="fact">
+				<dt>Year</dt>
+				<dd :text="$page.custom.get('year')"></dd>
+			</div>
+			<div class="fact">
+				<dt>Status</dt>
+				<dd :text="$page.custom.get('status')"></dd>
+			</div>
+			<div class="fact">
+				<dt>Stack</dt>
+				<dd class="tag-row">
+					<ctx :loop="$page.custom.get('stack')"><span class="tag" :text="$loop.it"></span></ctx>
+				</dd>
+			</div>
+			<div class="fact" :if="$page.custom.has('url')">
+				<dt>Live</dt>
+				<dd><a href="$page.custom.get('url')">Visit ↗</a></dd>
+			</div>
+		</dl>
+		<div class="prose" :html="$page.content()"></div>
+		<nav class="prev-next" aria-label="More projects">
+			<div :if="$page.prevPage?()">
+				<a href="$if.link()">
+					<span class="pn-label">← Earlier</span>
+					<span class="pn-title" :text="$if.title"></span>
+				</a>
+			</div>
+			<div :if="$page.nextPage?()">
+				<a href="$if.link()">
+					<span class="pn-label">Later →</span>
+					<span class="pn-title" :text="$if.title"></span>
+				</a>
+			</div>
+		</nav>
+	</article>
+</main>

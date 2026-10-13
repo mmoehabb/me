@@ -1,0 +1,362 @@
+---
+.title = "FawryPay API Guide",
+.date = .date("2025-11-21T00:00:00"),
+.description = "A Comprehensive Guide to Integrate FawryPay API into your own RESTful API Server",
+.layout = "article.shtml",
+.tags = ["payment", "fawry", "web"],
+.authors = ["Mo Ehab"],
+---
+
+
+> This text was originally written on March 12, 2025. As part of my work at LiteSpace,
+I was responsible for managing the integration of the Fawry API into our application.
+
+These papers provide a brief, but sufficient, exposition of how [FawryPay](https://fawrypay.com)
+works, how to integrate its payment methods in your back-end software application, how refund works,
+and how to keep up with transactions status. Moreover, a general architecture that ensures a seamless
+integration of FawryPay API, with a flexible design that can adapt any other API, is proposed at
+the end of these papers.
+
+---
+
+# Table of Contents
+
+1. **Payment Process Workflow**
+   - 1.1 Choosing Payment Method
+   - 1.2 Collecting Client’s Payment Details
+   - 1.3 Submitting Payment Request
+   - 1.4 Showing Payment Status
+2. **Refund API**
+3. **Bank Installments**
+4. **General Architecture Specification**
+   - 4.1. Entity Relationship Diagram
+   - 4.2. System Overview Diagram
+   - 4.3. Request Factory
+   - 4.4. Details Collector
+   - 4.5. Payment Strategy
+5. **Further Readings**
+
+---
+
+# [1. Payment Process Workflow]($heading.id('1-payment-process-workflow'))
+
+In a nutshell, the payment process involves four steps: choosing payment method, collecting client’s
+payment details, submitting payment request to the API (e.g. FawryPay), and showing the payment status
+summary to the client. Each of these steps will be elaborated in this section.
+
+## 1.1 Choosing Payment Method
+
+This step affects the upcoming procedures of the next steps; for example if [payment using FawryPay
+reference number](https://developer.fawrystaging.com/docs/server-side-api/pay-at-fawry) is selected,
+then there is no client payment details to be collected, the payment HTTP request to be submitted shall
+have `"paymentMethod":"PAYATFAWRY"` in its payload, and the status summary to be shown will be the reference
+number that shall be used to send money.
+
+## 1.2 Collecting Client’s Payment Details
+
+According to the selected method in the previous step, the required payment info will vary. As mentioned before,
+it can be none, in case the selected method is “PAYATFAWRY”. And it could be the user’s payment card info (card
+number, expiry year, expiry month, and cvv), in case the selected method is “CARD”.
+
+### Collecting Payment Card Details
+In order to make further payments seamless and easy (for users), we have to collect and store
+users payment info. However, this is considered an illegal action, if we are not fully [PCI](https://www.pcisecuritystandards.org/)
+compliant. So, a hassle-free approach to achieve this would be using [Fawry Card Token API](https://developer.fawrystaging.com/docs/card-tokenization/card-tokenization-overview).
+And this splits this step into two steps: generating a card token (optional), and using/selecting
+an existing card token (users can have more than one card token).
+
+If the selected method is CARD, and the user chose an existing card token, this will affect the next step by adding
+the following attribute in the request payload:
+
+```json
+{
+ ...
+ "cardToken": "ac0a1…"
+ ...
+}
+```
+
+> **Note:** alternatively, “saveCardInfo” field can be used, in the request body, instead of storing tokens,
+as will be shown in the next section.
+
+## 1.3 Submitting Payment Request
+
+The body of Fawry payment request is quite verbose, all its required and optional fields are listed and nicely
+described in the docs. The body slightly differs from one method to the other; meanly, specifying the “paymentMethod”
+attribute imposes an associated (to the selected method) body structure. e.g. if the “paymentMethod” is “PAYATFAWRY”
+you don’t have to pass the payment card info into the request body. On the other hand, if it’s “CARD” then the payment
+card info are required in the body.
+
+In this section you will know the general structure of the request body. And some useful features that
+you can obtain from its optional fields.
+
+### The General Body Structure
+
+Here is a brief list of the body structure, it states only the required fields in
+all body variants. Most of the fields values type, one can figure out from the name.
+However, others need some elaboration, for those you will find below a table of their
+description taken directly from the docs.
+
+```json
+{
+ "merchantCode": "1tSa6uxz2nTwlaAmt38enA==",
+ "merchantRefNum": "2312465464",
+ "customerMobile": "01234567891",
+ "customerEmail": "example@gmail.com",
+ "amount": 580.55,
+ "currencyCode": "EGP",
+ "language" : "en-gb",
+ "chargeItems": [
+   {
+     "itemId": "897fa8e81be26df25db592e81c31c",
+     "description": "Item Descriptoin",
+     "price": 580.55,
+     "quantity": "1"
+   }
+ ],
+ "signature": "2ca4c078ab0d…",
+ "paymentMethod": "PAYATFAWRY",
+ "description": "Example Description"
+}
+```
+
+| Field | Description |
+| :--- | :--- |
+| **merchantCode** | The merchant code provided by FawryPay team during the account setup. |
+| **merchantRefNum** | The unique reference number for the charge request in merchant system. |
+| **amount** | Must be in the form 0.00 (with two decimals) |
+| **signature** | The SHA-256 digested for the following concatenated string: `"merchantCode + merchantRefNum + customerProfileId (if exists, otherwise "") + paymentMethod + amount (in two decimal format 10.00) + secureKey"` |
+
+Similar to the required fields, the optional varies according to the used “paymentMethod”. For example, “saveCardInfo” which is a boolean value,
+can be used only when the “paymentMethod” is “CARD”. And it functions along with the “customerProfileId” optional field which will be elaborated in the following table (the general optional fields table).
+
+| Field | Description |
+| :--- | :--- |
+| **customerProfileId** | The unique customer profile ID in merchant system. This can be the user ID. |
+| **customerName** | The customer name in merchant system. |
+| **orderWebHookUrl** | WebHook Url used to notify your application back end when an event happens in this order like order paid, expired or refund |
+
+> **Note:** merchant system means your own system; the values in your own database.
+
+Pay attention that the aforementioned fields are general to all body structure variants, this doesn’t mean, in any way, that your request will certainly be valid (not a bad request, 400) when you dispatch it with only these fields. e.g. when you use the “CARD” method, the “returnUrl” field, which is not listed above, is required.
+
+The docs provide code examples for each method; you can navigate to your preferred method from [Server to Server APIs](https://developer.fawrystaging.com/docs/server-side-api/server-side-api-overview) section, copy the sample code in your preferred language, modify and use it in your project.
+
+### 3D Secure Authentication Card Payments
+
+Before moving to the final step, it’s worth mentioning the “enable3DS” field of the body structure variant associated to the “CARD” method.
+
+Normally, when using the “CARD” method and dispatching a request to FawryAPI, it responses with json object like the following:
+
+```json
+{
+ "type": "ChargeResponse",
+ "referenceNumber": "963455678",
+ "merchantRefNum": "9990d0642040",
+ "orderAmount": 20.00,
+ "paymentAmount": 20.00,
+ "fawryFees": 1.00,
+ "paymentMethod": "CARD",
+ "orderStatus": "PAID",
+ "paymentTime": 1607879720568,
+ "customerMobile": "01234567891",
+ "customerMail": "example@gmail.com",
+ "authNumber": "12336534",
+ "customerProfileId": "1212",
+ "signature": "b0ef178e2...",
+ "statusCode": 200,
+ "statusDescription": "Operation done successfully"
+}
+```
+
+However, when the “enable3DS” field is set “true”, another body variant is imposed; you have
+to supply the body with one more required field: “returnUrl”.
+
+The 3 domains secure (3DS) authentication protocol uses three domains to fulfill the transaction:
+your server domain, the provider domain (Fawry), and the band domain. First of all, you dispatch
+the request (with “enable3DS” true) to FawryAPI. Then it responses with a “redirectUrl” that you
+shall use to redirect the client to. The redirect destination (the bank) then do the authentication
+process and redirect the client back to Fawry. And eventually, Fawry redirects the client to the “returnUrl”
+you specified in the first place. [Read More](https://developer.fawrystaging.com/docs/server-side-api/3d-secure)
+
+## 1.4 Showing Payment Status
+
+The final step is showing the payment status, whether it is NEW, PAID, EXPIRED, CANCELED, REFUNDED,
+or FAILED. And more importantly, informing the user of further procedure he/she shall take to complete
+the payment process. e.g. when the user make payment with the “PAYATFAWRY” method, a page should be
+rendered (or a mail should be sent to the client e-mail) with the “referenceNumber” (that shall be used
+by any FawryPay POS retail store to fulfill the process) and instructions telling the user that he/she
+should pay an amount of money in any FawryPay POS retail store.
+
+A response body of FawryAPI to a request with the “PAYATFAWRY” method:
+
+```json
+{
+ "type": "ChargeResponse",
+ "referenceNumber": "963455678",
+ "merchantRefNum": "9990d0642040",
+ "orderAmount": 20.00,
+ "paymentAmount": 20.00,
+ "fawryFees": 1.00,
+ "paymentMethod": "PayAtFawry",
+ "orderStatus": "PAID",
+ "paymentTime": 1607879720568,
+ "customerMobile": "01234567891",
+ "customerMail": "example@gmail.com",
+ "customerProfileId": "1212",
+ "signature": "b0ef178e2f06...",
+ "statusCode": 200,
+ "statusDescription": "Operation done successfully"
+}
+```
+
+On the other hand, to present the payment result in case the method is “CARD”,
+we may either use FawryAPI charge response and assign it to the “returnUrl” field.
+See [charge response endpoint example](https://developer.fawrystaging.com/docs/server-side-api/callback-v2),
+or more convenient, we may use the Get Payment Status API.
+
+The Get Payment Status is just a Fawry endpoint to which we can dispatch an HTTP
+GET request with the following three query parameters: merchantCode, merchantRefNumber,
+and signature. Whereas, the signature is the SHA-256 digest value for merchantCode + merchnatRefNumber + secureKey.
+
+```
+https://atfawry.fawrystaging.com/ECommerceWeb/Fawry/payments/status/v2?
+merchantCode=is0N+YQzlE4=&merchantRefNumber=23124654641
+&signature=a5701a2e1e865bf863f0c781829f709ea4d36bdaf7d70e9bafb9458b1
+```
+
+### Fawry Server Notification
+
+Fawry supplies its users (merchants) with an out of the box feature to push notification
+for every change in any transaction status. And this is done by preconfiguring an endpoint,
+whilst the registration process, that FawryAPI will dispatch an HTTP post request to
+automatically on every status update.
+[Read More](https://developer.fawrystaging.com/docs/server-side-api/server-to-server-notification-v2)
+
+---
+
+# 2. Refund API
+
+Nothing more can be said rather than the description in the docs: “FawryPay allows you to
+refund amounts that have previously been paid by customers, returning a unique reference
+for this request. Refunding can be done on the full captured amount or a partial amount.
+Payments which have been authorised, but not captured, cannot be refunded.”
+
+Notice that we can refund just a partial amount of the money. Authorized money means pending
+funds, and it’s called captured once it’s moved from pending to complete.
+
+Refund can be applied by dispatching an HTTP post request to [Fawry refund endpoint](https://developer.fawrystaging.com/docs/server-side-api/refund)
+with a body structure like the following:
+
+```json
+{
+ "merchantCode" : "1tSa6uxz2nTwlaAmt38enA==",
+ "referenceNumber" : "23124654641",
+ "refundAmount" : "362.50",
+ "reason" : "Item not as described",
+ "signature" : "3f527d0209f..."
+}
+```
+
+## Refund Voucher
+
+What if users have paid with the “PAYATFAWRY” method, how then refund works?
+
+In this case, Fawry merchants shall generate a refund voucher that clients can
+use to get their money back from any FawryPay POS retail store. However this
+functionality/feature has not been mentioned in the online docs at the time of
+writing these papers. You have to contact Fawry support to inquiry about the
+applicability of refund vouchers.
+
+---
+
+# 3. Bank Installments
+
+Likewise, just another variant of the body structure. When an “installmentPlanId”
+is specified in the aforementioned body structure of the “CARD” method. Then the
+request will be handled by FawryAPI as a payment with Bank Installment.
+
+However, you must provide Fawry with your installment plans, using your account
+dashboard. And then you can retrieve them in your application by dispatching a
+GET request to the endpoint:
+
+`https://www.atfawry.com/ECommerceWeb/api/merchant/installment-plans`
+
+[Read More](https://developer.fawrystaging.com/docs/server-side-api/installments)
+
+---
+
+# 4. General Architecture Specification
+
+This section proposes an abstract software design solution for the aforementioned
+system. Workflow, PaymentStrategy, DetailsCollector, and RequestFactory; these are
+the models that shall be defined in order to express the high-level implementation
+of [the above-mentioned workflow]($link.ref('1-payment-process-workflow')).
+
+Before going through the discussion of each of the mentioned models, we should first
+delineate our database with and entity relationship diagram.
+
+## 4.1 Entity Relationship Diagram
+
+The database shall contain at least four entities: users, merchants, invoices, and items.
+The relations between these entities and their minimal fields (as shown in the diagram below)
+have been specified to be compliant with the aforementioned implementation in an abstract way;
+meanly, the DataControllers that will treat this data model as a FawryAPI model, may retrieve
+the merchant.id as FawryAPI “merchantRefNumber” and the merchant.name as “merchantCode”,
+invoice.id as “referenceNumber”,… etc.
+
+![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/0rh1scvvy8ysa02e4fhs.png)
+
+## 4.2 System Overview Diagram
+
+The Workflow is defined by its constituents: PaymentStrategy, DetailsCollector, and
+RequestFactory. So you can write a FawryWorkflow component that extends the abstract
+one in the sense that it has FawryPaymentMethod, FawryDetailsCollector, and FawryRequestFactory,
+that in turn extend the abstract defined ones. In more technical sense, the Workflow
+is a facade design pattern that gives the main script (the server) access to a compatible
+tools to be used to fulfill a payment process. And moreover, it connects these tools together.
+
+Just as the dependency flow in the real world model, it does in this simulation model;
+it goes from RequestFactory to DetailsCollector and ends in PaymentStrategy.
+
+![](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/fqr12rsy8ycoet8diw84.png)
+
+## 4.3 Payment Strategy
+
+This component is responsible of specifying the required data along with its payment
+method name. If you are working with .Net, for example, you may implement it with static
+classes and/or type definitions. If you are going to implement it using TypeScript, you
+will probably just export a bunch of [Zod](https://zod.dev/) objects.
+
+## 4.4 Details Collector
+
+This component is responsible of collecting the required data as specified by the PaymentStrategy,
+in the same Workflow. It can be an html form, a React form component, a function that fetches data
+from a local storage, or an express server handler to which users dispatch requests to initiate/fulfill
+payment processes (in this case this component and the RequestFactory will be merged together).
+
+## 4.5 Request Factory
+
+This component is responsible of forging the final API request that will be dispatched to the payment
+service provider. At the end of the day, this is what the user (of the system), our RESTful API server,
+makes use of. The Workflow must be initializing and passing the RequestFactory with the compatible
+DetailsCollector, therefore the end user can use its functions directly to forge requests. e.g. `FawryRequestFactory.payWithCard()`.
+
+## 4.6 One Feasible Implementation
+
+One feasible implementation, in TypeScript, for the abstract discussion above is as follows:
+the *PaymentStrategy* is just a script or bunch of scripts that export [Zod](https://zod.dev/)
+objects. Whereas, the *DetailsCollector* is a script or bunch of scripts that export URL endpoints
+for different application forms pages (assuming it’s a web application). Lastly, the *RequestFactory*
+is a bunch of express handlers/middlewares that can be used within express handlers to either 1) redirect
+the user to the required form which in turn will (re)redirect the user to the [referer](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referer)
+with payment info in the payload, or 2) use the payment info in the found payload, if exists, forge the request body,
+and finally invoke the (express) next function.
+
+---
+
+# Further Readings
+
+1. [End-to-End Testing](https://developer.fawrystaging.com/docs/testing/testing)
+2. [Error Codes](https://developer.fawrystaging.com/docs/error-codes/error-codes)
+3. [Server To Server Notification V2](https://developer.fawrystaging.com/docs/server-side-api/server-to-server-notification-v2)

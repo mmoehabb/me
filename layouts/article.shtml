@@ -1,0 +1,49 @@
+<extend template="base.shtml">
+<head id="head">
+</head>
+<main id="main">
+	<article class="rise">
+		<header class="page-head article-head">
+			<p class="kicker">
+				<a href="$site.page('articles').link()">Dispatches</a>
+				<span aria-hidden="true"> · </span>
+				<span :text="$page.date.format('January 02, 2006')"></span>
+				<span aria-hidden="true"> · </span>
+				<span :text="$page.wordCount().div(200).plus(1).str().suffix(' min read')"></span>
+			</p>
+			<h1 class="page-title" :text="$page.title"></h1>
+			<p class="page-dek" :text="$page.description"></p>
+			<div class="tag-row" :if="$page.tags.empty.not()">
+				<ctx :loop="$page.tags"><span class="tag" :text="$loop.it"></span></ctx>
+			</div>
+		</header>
+		<div class="prose" :html="$page.content()"></div>
+		<ctx :if="$page.footnotes?()">
+			<section class="footnotes">
+				<h2 class="footnotes-title">Footnotes</h2>
+				<ol :loop="$if">
+					<li id="$loop.it.def_id">
+						<span :html="$loop.it.html()"></span>
+						<ctx :loop="$loop.it.ref_ids">
+							<a class="fn-back" href="$loop.it.prefix('#')" :text="$loop.idx.str()"></a>
+						</ctx>
+					</li>
+				</ol>
+			</section>
+		</ctx>
+		<nav class="prev-next" aria-label="More dispatches">
+			<div :if="$page.prevPage?()">
+				<a href="$if.link()">
+					<span class="pn-label">← Older</span>
+					<span class="pn-title" :text="$if.title"></span>
+				</a>
+			</div>
+			<div :if="$page.nextPage?()">
+				<a href="$if.link()">
+					<span class="pn-label">Newer →</span>
+					<span class="pn-title" :text="$if.title"></span>
+				</a>
+			</div>
+		</nav>
+	</article>
+</main>

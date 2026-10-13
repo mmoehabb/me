@@ -1,0 +1,13 @@
+---
+.title = "Dispatches",
+.date = .date("2026-10-01T00:00:00"),
+.description = "Humble opinions, code, and notes.",
+.layout = "articles.shtml",
+.alternatives = [.{
+    .name = "rss",
+    .layout = "articles.xml",
+    .output = "index.xml",
+}],
+---
+
+Humble opinions, code, and notes roughly in the order they escaped my head.

@@ -1,0 +1,9 @@
+---
+.title = "Home",
+.date = .date("2026-10-01T00:00:00"),
+.description = "Portfolio of Mo Ehab — software developer. Selected projects and dispatches from the desk.",
+.layout = "index.shtml",
+---
+
+The homepage is composed in `layouts/index.shtml` from the site data in
+`zine.ziggy`, the projects tagged `featured`, and the latest articles.
