@@ -16,6 +16,7 @@
         "fonts/newsreader-var.woff2",
         "fonts/newsreader-italic-var.woff2",
         "favicon.svg",
+        "splash.png",
     ],
 }),
 .custom = .{

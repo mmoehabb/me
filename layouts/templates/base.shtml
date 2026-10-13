@@ -8,6 +8,16 @@
 		<meta name="author" content="$site.custom.get('name')">
 		<meta name="theme-color" content="#f4efe3" media="(prefers-color-scheme: light)">
 		<meta name="theme-color" content="#1a1611" media="(prefers-color-scheme: dark)">
+		<meta property="og:site_name" content="$site.title">
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="$page.title.suffix(' · ', $site.title)">
+		<meta property="og:description" content="$page.description">
+		<meta property="og:url" content="$site.host_url.addPath($page.link())">
+		<meta property="og:image" content="$site.host_url.addPath($site.asset('splash.png').link())">
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:title" content="$page.title.suffix(' · ', $site.title)">
+		<meta name="twitter:description" content="$page.description">
+		<meta name="twitter:image" content="$site.host_url.addPath($site.asset('splash.png').link())">
 		<link rel="icon" href="$site.asset('favicon.svg').link()" type="image/svg+xml">
 		<script>(function(){try{var t=localStorage.getItem("theme");if(!t){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","light");}})();</script>
 		<link rel="preload" href="$site.asset('fonts/archivo-black.woff2').link()" as="font" type="font/woff2" crossorigin>
