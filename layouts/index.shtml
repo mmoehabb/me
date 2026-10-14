@@ -28,19 +28,21 @@
 			<span class="count" :text="$site.page('projects').leaves().len.str().suffix(' on file')"></span>
 		</div>
 		<div class="work-list">
-			<div :loop="$site.page('projects').subpagesByTag('featured')">
-				<a class="work-row" href="$loop.it.link()">
-					<span class="num" :text="$loop.idx.str()"></span>
-					<div class="work-main">
-						<h3 :text="$loop.it.title"></h3>
-						<p :text="$loop.it.description"></p>
-					</div>
-					<span class="work-meta">
-						<span class="work-year" :text="$loop.it.custom.get('year')"></span>
-						<span class="arrow" aria-hidden="true">→</span>
-					</span>
-				</a>
-			</div>
+			<ctx :loop="$site.page('projects').subpagesByTag('featured')">
+				<div>
+					<a class="work-row" href="$loop.it.link()">
+						<span class="num" :text="$loop.idx.str()"></span>
+						<div class="work-main">
+							<h3 :text="$loop.it.title"></h3>
+							<p :text="$loop.it.description"></p>
+						</div>
+						<span class="work-meta">
+							<span class="work-year" :text="$loop.it.custom.get('year')"></span>
+							<span class="arrow" aria-hidden="true">→</span>
+						</span>
+					</a>
+				</div>
+			</ctx>
 		</div>
 		<p class="section-more"><a class="cta" href="$site.page('projects').link()">All projects</a></p>
 	</section>
@@ -51,11 +53,13 @@
 			<span class="count"><a href="$site.page('articles').alternative('rss').link()">Feed ↗</a></span>
 		</div>
 		<div class="dispatch-list">
-			<div class="dispatch" :loop="$site.page('articles').leaves(3)">
-				<span class="dispatch-date" :text="$loop.it.date.format('02 Jan 2006')"></span>
-				<h3 class="dispatch-title"><a href="$loop.it.link()" :text="$loop.it.title"></a></h3>
-				<span class="dispatch-time" :text="$loop.it.wordCount().div(200).plus(1).str().suffix(' min')"></span>
-			</div>
+			<ctx :loop="$site.page('articles').leaves(3)">
+				<div class="dispatch">
+					<span class="dispatch-date" :text="$loop.it.date.format('02 Jan 2006')"></span>
+					<h3 class="dispatch-title"><a href="$loop.it.link()" :text="$loop.it.title"></a></h3>
+					<span class="dispatch-time" :text="$loop.it.wordCount().div(200).plus(1).str().suffix(' min')"></span>
+				</div>
+			</ctx>
 		</div>
 		<p class="section-more"><a class="cta" href="$site.page('articles').link()">All dispatches</a></p>
 	</section>

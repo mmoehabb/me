@@ -848,7 +848,7 @@ html[data-theme="dark"] img {
 	padding: 0.1em 0.35em;
 	font-family: var(--font-code);
 	font-size: 0.85em;
-	white-space: nowrap;
+	overflow-wrap: anywhere;
 }
 
 .prose img {
@@ -952,15 +952,19 @@ html[data-theme="dark"] img {
 /* ---------- prev / next ---------- */
 
 .prev-next {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
+	display: flex;
 	gap: 1rem;
 	margin: 3rem 0 1rem;
 	max-width: 60rem;
 }
 
-.prev-next > div:only-child {
-	grid-column: 1 / -1;
+.prev-next > div {
+	flex: 1;
+	min-width: 0;
+}
+
+.prev-next > div:empty {
+	display: none;
 }
 
 .prev-next a {
@@ -1136,7 +1140,7 @@ html[data-theme="dark"] img {
 	}
 
 	.prev-next {
-		grid-template-columns: 1fr;
+		flex-direction: column;
 	}
 
 	.prev-next > div:last-child a {

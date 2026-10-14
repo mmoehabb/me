@@ -66,6 +66,7 @@
 				</div>
 			</div>
 			<p class="footer-fine">
+				© <span :text="$build.generated.format('2006')"></span> <span :text="$site.custom.get('name')"></span> — hand-set on the small web.
 			</p>
 		</footer>
 		<script>(function(){var btn=document.getElementById("theme-toggle");if(!btn){return;}function paint(){var dark=document.documentElement.getAttribute("data-theme")==="dark";var icon=btn.querySelector(".theme-icon");var label=btn.querySelector(".theme-label");btn.setAttribute("aria-pressed",dark?"true":"false");btn.setAttribute("aria-label",dark?"Switch to light mode":"Switch to dark mode");if(icon){icon.textContent=dark?"☀":"☾";}if(label){label.textContent=dark?"Light":"Dark";}}btn.addEventListener("click",function(){var next=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",next);try{localStorage.setItem("theme",next);}catch(e){}paint();});paint();})();</script>
