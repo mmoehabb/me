@@ -1,0 +1,445 @@
+---
+.title = "Bash Script Video Cutter",
+.date = .date("2024-07-07T00:00:00"),
+.description = "Learn Bash script and write a video cutter in it",
+.layout = "article.shtml",
+.tags = ["bash", "coding", "video"],
+.authors = ["Mo Ehab"],
+---
+
+# 1. Introduction
+When I want to take off some clips or scenes from a video on my laptop (with HDD), I usually find it tedious to do such a trivial thing using blender, shotcut, ...etc. Therefore, I wondered if I could simply use the terminal to do that. 
+
+This is what the article is all about. By the end of reading this article, you will not only be able to edit your videos using the terminal, but you will also be able to write your own bash script file.
+
+I'm not sure if this is useful in the tech industry, but I know that it's kinda interesting for anyone who has already involved in coding before. You could consider this article as a piece of entertainment for CS GEEKS!
+
+---
+
+# 2. A Sneak Peek of Bash Script
+First, and right before demonstrating the basics, we should mention a brief intro to what Bash actually is. In the same way, knowing what is Bash, is inherent from knowing what is GNU.
+> If you are familiar with the basics, you can just skip ahead to part 3 below.
+
+## 2.1 What is GNU?
+GNU is an operating system composed entirely of free software, that _Richard Stallman_ developed and launched in September 1983. Free Software doesn't mean gratis, as _Stallman_ defines it, it means a software that respects the users' freedom.
+
+For more elaboration, you can watch _Stallman_ himself talking about it in the video in the following link.
+[Richard Stallman's TEDx video: "Introduction to Free Software and the Liberation of Cyberspace"](https://www.fsf.org/blogs/rms/20140407-geneva-tedx-talk-free-software-free-society)
+
+## 2.2 What is Bash & Bash Scripting?
+Bash is just the shell of GNU operating system. It takes commands from the user and execute it. And it considered the both, a command interpreter and a programming language.
+
+Bash Scripting is collecting/writing bash commands in `.sh` file(s), that can then be executed using Bash.
+
+## 2.3 Bash Scripting Basics
+### 2.3.1 Syntax
+Bash simply reads your script line by line, considering each one as a separated **simple command** or a constituent of a **compound command**.
+
+As The form of simple command is just a sequence of words separated by blanks; like so `echo "Hello World!"`. You should be careful when you define variables, for instance `x = "some string var"` the x in this line would be interpreted as a command.
+
+A compound command is just a construct, that has a reserved word for indicating its beginning and another reserved word for its ending. It could contain more than simple command within, where each command separated with new line(s) or semicolon. For instance, the if statement `if [ condition ]; then echo "Hello"; fi` considered as a compound command.
+
+For defining strings, you can use either single or double quotes. However, you may want to use double quotes rather than the single, when you need to use '$' as NOT literal. (as we'll see, it's used to retrieve variables values)
+
+One final thing, the very first line of every script should be the path of Bash on your machine, which is used to interpret and run the current file. `#!/bin/bash`
+
+### 2.3.2 Parameters & Variables
+Every variable is a parameter, and not vice verse. A parameter is an entity that stores values, and once you give this parameter a name, It's called a variable.
+
+You can declare a variable simply like that `name=value` or by using `declare` built-in command. Using declare command can be useful in several ways, one of which is when you want to declare a readonly (constant) variable.
+```s
+var1="Hello World!"
+declare v2="Hello World using declare"
+declare -r v2="ReadOnly Variable"
+```
+However, when you want to print the variable value, for instance. You have to use '$' symbol to retrieve the value.
+```s
+echo var1 #output: 'var1'
+echo $var1 #output: 'Hello World!'
+```
+
+**Positional Parameters** are parameters that denoted by one or more digits, other than the single digit 0. They are temporarily replaced when a shell function is executed. And the `set` and `shift` builtins are used to set and unset them. You can reference them using '$' as with variables, except when denoted with more than one digit. Then you have to use _parameter expansion_. `$1, $2, ${12} #Examples`
+
+**Special Parameters** are parameters that special for Bash, they can only be referenced, whereas each one expands to some value(s). You can think of them as built-in commands, or functions. We will use two of them in _VideoCutter_ scripts: the @ parameter and 0. You can read of each one in the following link: [Special Parameters](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html#Special-Parameters).
+
+### 2.3.3 Expansions
+In my opinion, this's the most interesting topic in bash scripting. Expansions are used for several purposes, they are in arithmetic operations, making sequences (for instance, a list containing numbers: from one to ten), word splitting, and other more few things.
+
+#### Brace Expansion
+Brace Expansion can be used in two ways. One of them for generating multiple words with prefix or/and postfix.
+```s
+echo a{b,c,d}e #output: abe ace ade
+mkdir /home/{videos,photos} #will make two directories
+```
+As in variables, Bash will be confused with spaces in the brace Expansion
+```s
+echo a{b, c, d}e #output: a{b, c, d}e
+echo a {b,c} #output: a b c
+echo "a "{b,c} #output: a b a c
+```
+And the another way is for generating sequences. You can think of it as a function that takes three parameters, the first one is the beginning of the sequence, the second is the ending, and the third is the increment value. The 'parameters' are separated by "..".
+```s
+echo {1..5..1} #output: 1 2 3 4 5
+echo {a..d..1} #output: a b c d
+```
+
+#### Parameter Expansion
+Parameter Expansion is used to reference parameter/variable value. And It may be used with braces to protect the variable name from expanding with the following symbols.
+```s
+var="Hello "
+echo $var #output: Hello 
+echo $varWorld #output: ""
+echo ${var}World #output: Hello World
+```
+There are many features in this expansion, two of them are specifying the offset and the length of a string parameter.
+`${parameter:offset}`
+`${parameter:offset:length}`
+
+You can check all its features here: [Shell-Parameter-Expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html#Shell-Parameter-Expansion)
+
+#### Arithmetic Expansion
+To evaluate arithmetic expressions, you cannot simply do this `var=1+1` as in other programming languages. '1', '+', and '1' are not making any difference than 'a', 'b', and 'c'. They all treated as characters that construct a string.
+
+Arithmetic Expansion allow us to make arithmetic operations, by enclosing the expression with brackets, like that `$(( expr ))`.
+```s
+expr=1+1
+echo $expr #output: 1+1
+echo $(( expr )) #output: 2
+echo $(( 2*4 )) #output: 8
+echo $(( "2**4" )) #output: 16
+```
+> The evaluation is performed according to the rules of [Shell Arithmetic](https://www.gnu.org/software/bash/manual/html_node/Shell-Arithmetic.html). If the expression is invalid, Bash prints a message indicating failure to the standard error and no substitution occurs. 
+
+### 2.3.4 Split Strings
+To split strings in Bash, we will use `read` built-in command, that will read some input (string) into an array.
+```s
+str="some string"
+read -a arr <<< $str
+echo ${arr[0]} #output: some
+echo ${arr[1]} #output: string
+```
+`read` splits the string according to each char in `IFS` variable. `IFS` default value is "{space}{tab}{newline}".
+
+And the notation `<<<` is called [here-string](https://www.gnu.org/software/bash/manual/html_node/Redirections.html#Here-Strings). That is used to redirect the `read` command to get the string from some source (variable), instead of prompting the user to enter some string. 
+
+### 2.3.5 Bash Conditional Expressions
+Conditional Expressions return a boolean value; either true or false. They are used in if statement, and loop constructs. Therefore, It's essential to introduce them before going on.
+
+`-z` checks if the variable is empty or not.
+`-gt` checks if the left value is _greater than_ the right value.
+`-eq` checks if the left value equals the right value.
+`-ge` checks if the left value greater than or equal to the right value.
+
+Check the hole list here: [Comparison Operators](https://tldp.org/LDP/abs/html/comparison-ops.html)
+
+### 2.3.6 If Statement
+As the reader is supposed to be already involved in coding before. We only concerned to demonstrate the syntax of _If Statement_ and _Loops Constructs_.
+
+**If Statement**
+```s
+if [ expr ]; then
+   consequent-commands;
+fi
+```
+Exmaple:
+```s
+var=""
+if [ -z var ]; then
+   echo "The variable is empty!"
+elif [ 5 -gt $var ] then
+   echo "The variable is smaller than or equal to five."
+else
+   echo "The variable is greater than five."
+fi
+```
+
+### 2.3.7 Loops
+**While Loop**
+Execute commands while the expression(s) is/are true.
+```s
+i=0
+while [ $i -lt 5 ]; do
+   i=$(( ${i}+1 ))
+   echo $i
+done
+```
+
+**For Loop**
+Form 1
+```s
+listOfNames=(John Robert Bob)
+for name in ${listOfNames[@]}; do
+   echo $name
+done
+```
+
+Form 2
+```s
+for (( i=0; $i<5; i++ )); do
+   echo $i
+done
+```
+
+### 2.3.8 Prompt user for inputs
+To get inputs from users, we shall use `read` built-in command `read variable-name`. And for displaying some text for the user to inform him what kind data should he enter, we use -p.
+```s
+read -p "x: " X
+read -p "Y: " Y
+result=$(($X*$Y))
+echo $result
+
+#output:
+#x: 4
+#y: 5
+#20
+```
+
+### 2.3.9 Number Base
+A final thing that I'd like to mention in this brief tutorial: is how to convert integer variable base from octal to decimal. By default, Bash reads (interprets) any integer input in decimal base. Hovever, if the integer preceeded with 0, It tries to interpret it in octal base. Therefore, if you tried to add one to "08", Bash will give you an error message.
+```s
+echo $(( "08" + 1 )) 
+#output: 
+#bash: 08: value too great for base (error token is "08")
+```
+In order to convert the base from octal to decimal. We shall use another form to write the number 08: `base#"number"`.
+```s
+echo $(( 10#"08" + 1 )) 
+#output: 9
+```
+
+Finally, here's a handy cheatsheet that you may use to refresh your memory: [Bash Scripting cheatsheet](https://devhints.io/bash)
+
+> Just to know; There are very basic stuff that were NOT mentioned here — they aren't used in _VideoCutter_. (pipelines, function, select, case, and many other)
+
+---
+
+# 3. VideoCutter using FFmpeg
+Now the action begins, by using what we've learned in the previous section, and few commands from [FFmpeg](https://ffmpeg.org/). We are going to write a bash script that prompt the user to input the path of the video file that supposed to be trimmed, and list of periods of that video.
+
+Before getting started in writing and demonstrating the script step-by-step. You can download and try it from the following repository: [https://github.com/Mahmoud-Ehab/video-cutter](https://github.com/Mahmoud-Ehab/video-cutter)
+
+> You can install FFmpeg on ubuntu just by using the following commands:
+> ```s
+> $ sudo apt update
+> $ sudo apt install ffmpeg
+> ```
+
+## 3.1 Program Components (Scripts)
+The program constructs of only four components:
+- `main.sh` this is the file which contains the main logic of the program, and what the user expected to execute.
+- `cutter.sh` used by main.sh as a command to extract clips from a mp4 file.
+- `mp4tots.sh` used by main.sh to convert the extracted clips from mp4 extension into ts.
+- `tstomp4.sh` used by main.sh to convert "clips.ts" file (the concatenation of the clips with ts extension files) from ts into mp4.
+
+> . TS file extension is a Video Transport Stream file used to store MPEG-2-compressed video data.
+
+## 3.2 main.sh
+### 1- Get inputs from the user
+First we prompt the user to input the mp4 file path and the directory where the clips will be exported.
+```s
+read -p "Mp4FilePath: " filepath
+read -p "outputDir: " dirpath
+```
+Then we check if the `dirpath` is empty. If it is, then make it equal the current directory path.
+```s
+...
+if [ -z $dirpath ]; then
+	dirpath='.'
+fi
+```
+Intialize two lists `T1 & T2`; The first one is a list of intial time of each clip, and the second of the end of each clip.
+```s
+T1=() #List of clips initial time
+T2=() #List of clips end time
+```
+> Each clip is a string in the form hh:mm:ss
+
+And finally make a while loop for prompting user inputs repeatedly.
+```s
+loop='0' #Var for indicating the end of while loop
+count='0' #The number of specified clips
+
+# Prompt user for inputs
+while [ $loop == 0 ] do
+	count=$(( $count + 1 ))
+	read -p "Clip$count T1: " t1
+	read -p "Clip$count T2: " t2
+	
+	T1+=($t1)
+	T2+=($t2)
+	
+	read -p "Enough? (0 for no, 1 for yes): " loop
+done
+```
+
+## 2- Extract clips from the mp4 file
+First create the directory the user specified using `mkdir` command. If it does exist, nothing happens.
+```s
+mkdir $dirpath
+```
+
+Then by using for loop, $count variable, and cutter.sh script.  Generate $count number of clips out of $Mp4PathFile.
+```s
+for (( i=0; i<$count; i++ ))
+do
+	output="$dirpath/clip$i.mp4"
+	bash ./cutter.sh $filepath ${T1[$i]} ${T2[$i]} $output
+done
+```
+
+### 3- Combine the clips
+Convert clips from mp4 to ts using for loop... and mp4tots.sh script.
+```s
+...
+mp4file="$dirpath/clip$i.mp4"
+tsfile="$dirpath/clip$i.ts"
+		
+bash ./mp4tots.sh $mp4file $tsfile
+
+# Remove the mp4 file
+rm $mp4file
+...
+```
+Then concatenate them using `cat` built-in command.
+```s
+	tsfiles=""
+	for (( i=0; i<$count; i++ ))
+	do
+		tmp=" $dirpath/clip$i.ts"
+		tsfiles+=$tmp
+	done
+	cat $tsfiles > $dirpath/output.ts
+	rm $tsfiles
+```
+And finally convert the final ts file into mp4 using tstomp4.sh script.
+```s
+bash ./tstomp4.sh $dirpath/output.ts $dirpath/output.mp4
+rm $dirpath/output.ts
+```
+
+## 3.3 cutter.sh
+`cutter.sh` has 4 positional parameters: 
+- $1: the mp4 file path.
+- $2: t1, the beginning time of the clip. In the form `hh:mm:ss`
+- $3: t2, the ending time of the clip. in the form `hh:mm:ss`
+- $4: the output clip path.
+
+### 1- Check if the required positional parameters are given
+```s
+if [ -z $1 ] || [ -z $2 ] || [ -z $3 ] || [ -z $4 ]; then
+	echo "Valid Usage: ./script.sh src.mp4 hh:mm:ss hh:mm:ss out.mp4"
+	exit 2
+fi
+
+INP=$1
+OUT=$4
+T1=$2
+T2=$3
+```
+### 2- Initialize start and end time variables
+start and end will be arrays with three elements: hours, minutes, and seconds.
+To split the user inputs $2 and $3, we shall use split strings (section 2.3.4 of this article) as descriped above.
+```s
+IFS=':' #For splitting T1 and T2
+
+# Initialize start time list
+start=()
+read -a arr <<< $T1
+for i in ${arr[@]};
+do
+	start+=($i)
+done
+
+# Initialize end time list
+end=()
+read -a arr <<< $T2
+for i in ${arr[@]};
+do
+	end+=($i)
+done
+```
+### 3- Evaluate the duration between T1 and T2
+The following algorithm (code) is trivial, and elaborating it is out of the scope of the article.
+```s
+# Evaluate the duration between T1 and T2
+# secs
+if [ ${end[2]} -ge ${start[2]} ]; then
+	ss=$(( 10#${end[2]} - 10#${start[2]} ))
+else
+	end[1]=$(( 10#${end[1]} - 1 ))
+	ss=$((10#${end[2]} + 60 - 10#${start[2]}))
+fi
+# mins
+if [ ${end[1]} -ge ${start[1]} ]; then
+	mm=$(( 10#${end[1]} - 10#${start[1]} ))
+else
+	end[0]=$(( 10#${end[0]} - 1 ))
+	mm=$(( 10#${end[1]} + 60 - 10#${start[1]} ))
+fi
+# hours
+if [ ${end[1]} -ge ${start[1]} ]; then
+	hh=$(( 10#${end[0]} - 10#${start[0]} ))
+else
+	exit 1
+fi
+```
+After initializing $ss, $mm, and $hh. We shall assert that eachone of them is a string of length 2. Then construct the dur variable.
+```s
+if [ $ss -lt 10 ]; then ss="0$ss"; fi
+if [ $mm -lt 10 ]; then mm="0$mm"; fi
+if [ $hh -lt 10 ]; then hh="0$hh"; fi
+
+dur=$hh:$mm:$ss
+```
+### 4- Export the clip using FFmpeg command
+Finally, we can take off the clip from the source mp4 using FFmpeg.
+```s
+ffmpeg -i "$INP" -ss "$T1" -t "$dur" "$OUT"
+```
+
+## 3.4 mp4tots.sh
+This script has jsut two positional parameters:
+- $1: the mp4 file path
+- $2: the ts file path
+
+### 1- Check if the required positional parameters are given
+```s
+if [ -z $1 ] || [ -z $2 ]; then
+	echo "Valid Usage: ./script.sh input.mp4 output.ts"
+	exit 2
+fi
+```
+### 2- Convert the mp4 file using FFmpeg
+Using FFmpeg command as found in the docs. (you can find it in the references)
+```s
+ffmpeg -i "$1" -vcodec copy -vbsf h264_mp4toannexb -acodec copy "$2"
+```
+
+## 3.5 tstomp4.sh
+This script has jsut two positional parameters:
+- $1: the ts file path
+- $2: the mp4 file path
+
+### 1- Check if the required positional parameters are given
+
+```s
+if [ -z $1 ] || [ -z $2 ]; then
+	echo "Valid Usage: ./script.sh input.mp4 output.mp4"
+	exit 2
+fi
+```
+
+### 2- Convert the ts file using FFmpeg
+
+```s
+ffmpeg -y -i "$1" -acodec copy -ar 44100 -ab 96k -coder ac -vbsf h264_mp4toannexb "$2"
+```
+
+---
+
+# References
+- [https://www.gnu.org/](https://www.gnu.org/)
+- [https://www.gnu.org/software/bash/manual/html_node/index.html](https://www.gnu.org/software/bash/manual/html_node/index.html)
+- [https://tldp.org/LDP/abs/html/comparison-ops.html](https://tldp.org/LDP/abs/html/comparison-ops.html)
+- [https://ffmpeg.org/ffmpeg.html#Main-options](https://ffmpeg.org/ffmpeg.html#Main-options)
+- [https://ffmpeg.org/ffmpeg.html#Advanced-options](https://ffmpeg.org/ffmpeg.html#Advanced-options)
