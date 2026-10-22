@@ -1,0 +1,35 @@
+---
+.title = "cracksdb",
+.date = .date("2024-08-13T23:00:00"),
+.description = "A minimalist permanent state management library for Node.js, built on the StateFile design.",
+.layout = "project.shtml",
+.tags = ["library", "typescript", "node.js", "databases"],
+.custom = .{
+    .year = "2024",
+    .status = "v1.1.0",
+    .stack = ["TypeScript", "Node.js"],
+    .url = "https://github.com/mmoehabb/cracksdb",
+},
+---
+
+A tiny npm package for permanent state management, built around what I call
+the StateFile architecture: instead of tables, rows and query languages, your
+application state lives in substates — files of typed data units that load,
+update and persist with plain function calls.
+
+# How it works
+
+A `StateManager` scans a root directory and loads your state; each substate is
+a `StateFile` you `add` units to, retrieve with `get`/`getWhere`, and change
+through builder functions in `update`.
+
+- Declared types, enforced integrity: `extendUnitType` declares which fields
+of a data unit are updatable, so updates can't silently touch undeclared
+fields. It also supports nested objects and array fields.
+- Passkeys: a `StateFile` can be given a passkey, and deleting it physically
+requires that key.
+- Cracks: `seal`, `split`, `loadOne` and `unloadOne` slice a substate into
+pieces so you can keep hot data in RAM and cold data on disk.
+
+The whole design is written up in
+[StateFile: a minimalist design for permanent state management](https://dev.to/_moehab/statefile-a-minimalist-design-for-permanent-state-management-43d7).

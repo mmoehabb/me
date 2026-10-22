@@ -1,0 +1,31 @@
+---
+.title = "Syncoboard",
+.date = .date("2026-06-30T15:00:00"),
+.description = "A terminal-flavored productivity platform: fast web UI, REST API, TUI, and background services in one monorepo.",
+.layout = "project.shtml",
+.tags = ["web app", "typescript", "bun", "postgres"],
+.custom = .{
+    .year = "2026",
+    .status = "v0.1.13",
+    .stack = ["TypeScript", "Bun", "PostgreSQL"],
+    .url = "https://github.com/mmoehabb/syncoboard",
+    .og_image = "syncoboard.png",
+},
+---
+
+A unified productivity application and toolset for developers and power
+users, with a strict terminal-inspired dark mode aesthetic: a fast web
+interface on top of a standard REST API backend.
+
+# Why
+
+- Stay in the terminal: an API built for integration plus a TUI app, so you
+can manage workload without leaving your shell.
+- Focus on building, not managing: boards that minimize friction instead of
+inviting endless organizing and context switching.
+
+# Shape of the codebase
+
+A Bun monorepo split into apps (web dashboard, TUI, maintenance), backend
+services (websocket, webhook, cron, deployer) and a Go SDK, with PostgreSQL
+as the store and Docker Compose for local setup.

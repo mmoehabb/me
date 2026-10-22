@@ -451,10 +451,6 @@ html[data-theme="dark"] img {
 
 /* ---------- work rows ---------- */
 
-.work-list > div:nth-child(even) > .work-row {
-	margin-left: clamp(0rem, 4vw, 2.5rem);
-}
-
 .work-row {
 	display: grid;
 	grid-template-columns: 3rem 1fr auto;
@@ -1114,10 +1110,6 @@ html[data-theme="dark"] img {
 		align-items: baseline;
 		text-align: left;
 		gap: 0.3rem 0.9rem;
-	}
-
-	.work-list > div:nth-child(even) > .work-row {
-		margin-left: 0;
 	}
 
 	.dispatch {

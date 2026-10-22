@@ -1,0 +1,38 @@
+---
+.title = "dbdiff",
+.date = .date("2026-10-13T12:00:00"),
+.description = "Database-agnostic schema diff engine that compares two databases and generates migration scripts.",
+.layout = "project.shtml",
+.tags = ["featured", "tool", "go", "databases"],
+.custom = .{
+    .year = "2026",
+    .status = "v0.1.4",
+    .stack = ["Go"],
+    .url = "https://github.com/mmoehabb/dbdiff",
+},
+---
+
+A database-diff engine that compares schemas and generates migration scripts.
+Point it at a source and a target database, and it emits the DDL needed to make
+the target match the source. The core is database-agnostic, so SQL Server,
+PostgreSQL and MySQL are all in scope.
+
+# Approach
+
+The architecture keeps core logic completely separate from database-specific
+mechanisms, and works through three models:
+
+- Introspection & Canonical Schema: adapters read a database's metadata and
+convert it into a canonical schema model — the data as it actually is, in an
+abstract, DB-agnostic form.
+- Diff Engine & Migration Plan: the engine reads two canonical schemas and
+computes a migration plan, an intermediate representation of explicit,
+directional operations (`AddColumnOperation`, `CreateTableOperation`, ...)
+that turn the target into the source.
+- Renderer & SQL Generation: a target-specific renderer takes the plan and
+generates native database logic, like T-SQL DDL scripts.
+
+Adding another engine mainly means writing a new Introspector and Renderer —
+the diffing engine itself stays untouched. The v1 foundation ships the core
+models, the CLI, and a skeletal MSSQL adapter, with data operations planned
+alongside schema operations in later phases.

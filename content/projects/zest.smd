@@ -1,0 +1,33 @@
+---
+.title = "Zest",
+.date = .date("2026-09-19T02:00:00"),
+.description = "A simple Zig package for writing graphic applications and small games on top of SDL3.",
+.layout = "project.shtml",
+.tags = ["featured", "library", "zig", "graphics", "game development"],
+.custom = .{
+    .year = "2025",
+    .status = "v0.1.1",
+    .stack = ["Zig", "SDL3"],
+    .url = "https://github.com/mmoehabb/zest",
+    .og_image = "zest.png",
+},
+---
+
+An easy-to-pick-up graphics layer for Zig: a small package that lets you write
+graphical applications and games without wrestling with SDL directly. Objects,
+scenes, screens, drawables and scripts compose into something close to a
+minimal game engine.
+
+# Design
+
+- Drawables are shapes with a pluggable draw strategy — Rect and other
+geometric shapes ship built-in, plus interactive UI ones (Button, TextInput,
+Select, Checkbox) and SVG; you can write your own.
+- Scripts attach behavior to objects, with start/update/end hooks. A Movement
+script and a rigid-body/collision pair are included, and custom scripts are
+just structs.
+- Scenes hold objects and behave like cameras (zoom and pan); screens own the
+render loop and event manager. SDL3 stays reachable underneath when you need it.
+
+Compatible with Zig ^0.16.0, with examples you can run via
+`zig build example:moving-box`.
