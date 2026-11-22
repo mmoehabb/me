@@ -1,8 +1,8 @@
-/* Syntax highlighting for static code blocks (dark ink slabs). */
+/* Syntax highlighting for static code blocks (warm charcoal surface). */
 
 code .comment,
 code .doc {
-	color: #8e887a;
+	color: #8E8C84;
 	font-style: italic;
 }
 
@@ -11,12 +11,12 @@ code .conditional,
 code .repeat,
 code .debug,
 code .label {
-	color: #f9759f;
+	color: #E28567;
 }
 
 code .string,
 code .character {
-	color: #e8c468;
+	color: #E2C07D;
 }
 
 code .number,
@@ -24,13 +24,13 @@ code .boolean,
 code .constant,
 code .constant_builtin,
 code .float {
-	color: #7fb5e8;
+	color: #8AB4E1;
 }
 
 code .function,
 code .method,
 code .constructor {
-	color: #6fd3c6;
+	color: #7FC8B6;
 }
 
 code .type,
@@ -38,11 +38,11 @@ code .type_builtin,
 code .builtin,
 code .namespace,
 code .module {
-	color: #9db4f0;
+	color: #A6B8EA;
 }
 
 code .operator {
-	color: #f9759f;
+	color: #E28567;
 }
 
 code .punctuation,
@@ -54,17 +54,17 @@ code .variable,
 code .variable_parameter,
 code .property,
 code .parameter {
-	color: #cfc8b8;
+	color: #D6D3CB;
 }
 
 code .tag {
-	color: #f9759f;
+	color: #E28567;
 }
 
 code .attribute {
-	color: #e8c468;
+	color: #E2C07D;
 }
 
 code .escape {
-	color: #f2a65a;
+	color: #E8A670;
 }

@@ -6,7 +6,7 @@
 .tags = ["featured", "tool", "go", "agentic ai"],
 .custom = .{
     .year = "2026",
-    .status = "v1.2.0",
+    .status = "v1.3.2",
     .stack = ["Go"],
     .url = "https://github.com/mmoehabb/maestro",
 },

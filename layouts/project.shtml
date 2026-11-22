@@ -3,49 +3,51 @@
 </head>
 <main id="main">
 	<article class="rise">
-		<header class="page-head">
-			<p class="kicker">
-				<a href="$site.page('projects').link()">Projects</a>
-				<span aria-hidden="true"> / </span>
-				<span :text="$page.custom.get('year')"></span>
-			</p>
-			<h1 class="page-title" :text="$page.title"></h1>
-			<p class="page-dek" :text="$page.description"></p>
+		<header class="article-header">
+			<p class="kicker"><a href="$site.page('projects').link()">Projects</a></p>
+			<h1 class="article-title" :text="$page.title"></h1>
 		</header>
-		<dl class="facts">
-			<div class="fact">
-				<dt>Year</dt>
-				<dd :text="$page.custom.get('year')"></dd>
+		<div class="editorial-grid">
+			<div class="editorial-body">
+				<p class="article-lead" :if="$page.description.len().gt(0)" :text="$page.description"></p>
+				<div class="prose" :html="$page.content()"></div>
+				<nav class="prev-next" aria-label="More projects">
+					<div :if="$page.prevPage?()">
+						<a href="$if.link()">
+							<span class="pn-label">← Earlier</span>
+							<span class="pn-title" :text="$if.title"></span>
+						</a>
+					</div>
+					<div :if="$page.nextPage?()">
+						<a href="$if.link()">
+							<span class="pn-label">Later →</span>
+							<span class="pn-title" :text="$if.title"></span>
+						</a>
+					</div>
+				</nav>
 			</div>
-			<div class="fact">
-				<dt>Status</dt>
-				<dd :text="$page.custom.get('status')"></dd>
-			</div>
-			<div class="fact">
-				<dt>Stack</dt>
-				<dd class="tag-row">
-					<ctx :loop="$page.custom.get('stack')"><span class="tag" :text="$loop.it"></span></ctx>
-				</dd>
-			</div>
-			<div class="fact" :if="$page.custom.has('url')">
-				<dt>Live</dt>
-				<dd><a href="$page.custom.get('url')">Visit ↗</a></dd>
-			</div>
-		</dl>
-		<div class="prose" :html="$page.content()"></div>
-		<nav class="prev-next" aria-label="More projects">
-			<div :if="$page.prevPage?()">
-				<a href="$if.link()">
-					<span class="pn-label">← Earlier</span>
-					<span class="pn-title" :text="$if.title"></span>
-				</a>
-			</div>
-			<div :if="$page.nextPage?()">
-				<a href="$if.link()">
-					<span class="pn-label">Later →</span>
-					<span class="pn-title" :text="$if.title"></span>
-				</a>
-			</div>
-		</nav>
+			<aside class="meta-rail" aria-label="Project details">
+				<dl class="meta-list">
+					<div class="meta-row">
+						<dt>Year</dt>
+						<dd :text="$page.custom.get('year')"></dd>
+					</div>
+					<div class="meta-row">
+						<dt>Status</dt>
+						<dd :text="$page.custom.get('status')"></dd>
+					</div>
+					<div class="meta-row">
+						<dt>Stack</dt>
+						<dd class="meta-topics">
+							<ctx :loop="$page.custom.get('stack')"><span :text="$loop.it"></span></ctx>
+						</dd>
+					</div>
+					<div class="meta-row" :if="$page.custom.has('url')">
+						<dt>Live</dt>
+						<dd><a href="$page.custom.get('url')">Visit ↗</a></dd>
+					</div>
+				</dl>
+			</aside>
+		</div>
 	</article>
 </main>

@@ -2,10 +2,12 @@
 <head id="head">
 </head>
 <main id="main">
-	<header class="page-head rise">
-		<p class="kicker" :text="$page.custom.getOr('kicker', 'Page')"></p>
-		<h1 class="page-title" :text="$page.title"></h1>
-		<p class="page-dek" :text="$page.description"></p>
-	</header>
-	<div class="prose rise rise-2" :html="$page.content()"></div>
+	<article class="reading-page rise">
+		<header class="page-head">
+			<p class="kicker" :text="$page.custom.getOr('kicker', 'Page')"></p>
+			<h1 class="page-title" :text="$page.title"></h1>
+			<p class="article-lead" :if="$page.description.len().gt(0)" :text="$page.description"></p>
+		</header>
+		<div class="prose" :html="$page.content()"></div>
+	</article>
 </main>

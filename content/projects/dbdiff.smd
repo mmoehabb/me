@@ -6,7 +6,7 @@
 .tags = ["featured", "tool", "go", "databases"],
 .custom = .{
     .year = "2026",
-    .status = "v0.1.4",
+    .status = "v0.1.6",
     .stack = ["Go"],
     .url = "https://github.com/mmoehabb/dbdiff",
 },
