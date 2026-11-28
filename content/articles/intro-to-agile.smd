@@ -1,6 +1,6 @@
 ---
 .title = "Introduction to Agile",
-.date = .date("2022-05-24T00:00:00"),
+.date = .date("2022-03-24T00:00:00"),
 .description = "A brief discussion on each agile principle and practice.",
 .layout = "article.shtml",
 .tags = ["management", "productivity", "agile"],

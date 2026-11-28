@@ -1,6 +1,6 @@
 ---
 .title = "Bash Script Video Cutter",
-.date = .date("2024-07-07T00:00:00"),
+.date = .date("2022-01-07T00:00:00"),
 .description = "Learn Bash script and write a video cutter in it",
 .layout = "article.shtml",
 .tags = ["bash", "coding", "video"],
